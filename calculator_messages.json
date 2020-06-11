@@ -1,0 +1,17 @@
+{
+  "en": {
+    "welcome": "Welcome to Calculator!",
+    "getNum1": "What's the first number?",
+    "getNum2": "What's the second number?",
+    "getOper": "What operation would you like to perform?\n1) Add 2) Subtract 3) Multiply 4) Divide",
+    "invalidTryAg": "Must choose 1, 2, 3 or 4",
+    "invalidNum": "Hmm... that doesn't look like a valid number.",
+    "invalidOpt": "Hmm... that's not a valid option. Please try again.",
+    "repeatCalc": "Would you like to perform another calulation?\n1) Yes 2) No",
+    "result": "The result is"
+  },
+  "sp": {
+    "welcome": "Bienvenido a la calculadora!",
+    "getNum1": "¿Cuál es el primer número?"
+  }
+}
