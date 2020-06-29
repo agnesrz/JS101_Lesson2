@@ -33,7 +33,7 @@ examples:
   -$5,111, 3%, 1 years, 0 mo => $432.87
   -$405,123, 1.54%, 25 years, 3 mo => $1,614.65
   -$405,123, 1.54%, 0 years, 24 mo => $17,152.24
-  -$2,500,000, .01, 4 mo => $104,177.52
+  -$2,500,000, .01, 4 mo => $625,013
   -$5.00, 5%, 5 years => $0.09
   -$$5, 5%, 5 years => $0.09
   -$5, 5%%, 5 years => $0.09
@@ -73,7 +73,7 @@ examples:
         (1 - Math.pow((1 + monthlyInterestRate), (-loanDurationMonths))));
     -Print monthly payment to the console
       -use .toFixed(2)
-  */
+*/
 
 const readline = require('readline-sync');
 
@@ -83,30 +83,48 @@ let monthlyInterestRate;
 let loanDurationYears;
 let loanDurationMonths;
 let monthlyPayment;
+let notNumber = /[^0-9.]/;
+let notNumber2 = /[^0-9]/;
 
 function invalid() {
   console.log('Invalid entry. Please try again.');
 }
 
 function getLoanAmount() {
-  loanAmount = readline.question('Enter the loan amount:\n$');
+  loanAmount = readline.question('Enter the loan amount (in USD):\n$');
 
   while (loanAmount.includes(',')) {
     loanAmount = loanAmount.replace(',', '');
   }
 
+  if (notNumber.test(loanAmount)) {
+    invalid();
+    getLoanAmount();
+  }
+
   loanAmount = parseFloat(loanAmount);
 
-  if ((typeof loanAmount !== 'number') || (isNaN(loanAmount))) {
+  if (isNaN(loanAmount)) {
     invalid();
     getLoanAmount();
   }
 }
 
 function getInterestRate() {
-  annualInterestRate = parseFloat(readline.question('Enter the annual percentage rate (APR) (e.g., for 5%, enter \'5\'):\n'));
+  annualInterestRate = readline.question('Enter the annual percentage rate (APR) (e.g., for 5%, enter \'5\'):\n');
 
-  while ((typeof annualInterestRate !== 'number') || (isNaN(annualInterestRate))) {
+  while (annualInterestRate.includes(',')) {
+    annualInterestRate = annualInterestRate.replace(',', '');
+  }
+
+  if (notNumber.test(annualInterestRate)) {
+    invalid();
+    getInterestRate();
+  }
+
+  annualInterestRate = parseFloat(annualInterestRate);
+
+  if (isNaN(annualInterestRate)) {
     invalid();
     getInterestRate();
   }
@@ -117,33 +135,31 @@ function getInterestRate() {
 function getLoanDurationYears() {
   loanDurationYears = (readline.question('Years: '));
 
-  if (loanDurationYears.includes('.')) {
-    invalid();
-    getLoanDurationYears(); /// problem that if you enter invalid characters you don't get an error
+  while (loanDurationYears.includes(',')) {
+    loanDurationYears = loanDurationYears.replace(',', '');
   }
 
-  loanDurationYears = parseFloat(loanDurationYears);
-
-  if ((typeof loanDurationYears !== 'number') && !(isNaN(loanDurationYears))) {
+  if (notNumber2.test(loanDurationYears)) {
     invalid();
     getLoanDurationYears();
   }
+
+  loanDurationYears = parseFloat(loanDurationYears);
 }
 
 function getLoanDurationMonths() {
   loanDurationMonths = readline.question('Months: ');
 
-  if (loanDurationMonths.includes('.')) {
+  while (loanDurationMonths.includes(',')) {
+    loanDurationMonths = loanDurationMonths.replace(',', '');
+  }
+
+  if (notNumber2.test(loanDurationMonths)) {
     invalid();
     getLoanDurationMonths();
   }
 
   loanDurationMonths = parseFloat(loanDurationMonths);
-
-  if ((typeof loanDurationMonths !== 'number') && !(isNaN(loanAmount))) {
-    invalid();
-    getLoanDurationMonths();
-  }
 }
 
 function getTotalLoanDuration() {
@@ -152,11 +168,9 @@ function getTotalLoanDuration() {
     getLoanDurationYears();
     getLoanDurationMonths();
     getTotalLoanDuration();
-  } else if (isNaN(loanDurationYears)) {
-    return;
-  } else if (isNaN(loanDurationMonths)) {
+  } else if ((isNaN(loanDurationMonths)) || (loanDurationMonths === 0)) {
     loanDurationMonths = loanDurationYears * 12;
-  } else {
+  } else if (loanDurationMonths && loanDurationYears) {
     loanDurationMonths += (loanDurationYears * 12);
   }
 }
@@ -165,26 +179,48 @@ function getMonthlyPayment() {
   if (!monthlyInterestRate) {
     monthlyPayment = loanAmount / loanDurationMonths;
   } else {
-    monthlyPayment = loanAmount * (monthlyInterestRate / (1 - Math.pow((1 + monthlyInterestRate), (-loanDurationMonths))));
+    monthlyPayment = loanAmount * (monthlyInterestRate /
+    (1 - Math.pow((1 + monthlyInterestRate), (-loanDurationMonths))));
   }
 
   monthlyPayment = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(monthlyPayment);
 }
 
+function again() {
+  console.log('Would you like to perform another calculation? Type \'Y\' for \'Yes\' and \'N\' for \'No\'.');
+
+  let answer = readline.prompt().toUpperCase();
+
+  if (answer === 'Y') {
+    calculator();
+  } else if (answer === 'N') {
+    return;
+  } else {
+    invalid();
+    again();
+  }
+}
+
+function calculator() {
+  getLoanAmount();
+
+  getInterestRate();
+
+  console.log('Enter the loan duration in years and/or months:');
+
+  getLoanDurationYears();
+
+  getLoanDurationMonths();
+
+  getTotalLoanDuration();
+
+  getMonthlyPayment();
+
+  console.log(`Your monthly payment is ${monthlyPayment}.`);
+
+  again();
+}
+
 console.log('Welcome to Mortgage Calculator \n * * * * * * * * * * * * * *\n');
 
-getLoanAmount();
-
-getInterestRate();
-
-console.log('Enter the loan duration in years and/or months:');
-
-getLoanDurationYears();
-
-getLoanDurationMonths();
-
-getTotalLoanDuration();
-
-getMonthlyPayment();
-
-console.log(`Your monthly payment is ${monthlyPayment}.`);
+calculator();
