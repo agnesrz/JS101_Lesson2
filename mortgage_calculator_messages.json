@@ -1,0 +1,8 @@
+{
+  "welcome": "Welcome to Mortgage Calculator \n * * * * * * * * * * * * * *\n",
+  "invalid": "Invalid entry. Please try again.",
+  "loanAmount": "Enter the loan amount (in USD):\n$",
+  "interestRate": "Enter the annual percentage rate (APR) (e.g., for 5%, enter 5):\n",
+  "loanDuration": "Enter the loan duration in years\n",
+  "another": "Would you like to perform another calculation? Type Y for Yes and N for No."
+}
