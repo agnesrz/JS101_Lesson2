@@ -12,10 +12,10 @@ let notNumber = /[^0-9.]/;
 
 let prompt = (key) => {
   console.log('=> ' + MESSAGE[key]);
-}
+};
 
 function invalid() {
-  prompt(invalid);
+  prompt('invalid');
 }
 
 function isInvalidAmount(value) {
@@ -26,46 +26,29 @@ function isInvalidAmount(value) {
 
 function countPeriods(value) {
   let periods = 0;
-  for (let i = 0; i < value.length; i += 1) {
-    if (value[i] === '.') {
+  for (let count = 0; count < value.length; count += 1) {
+    if (value[count] === '.') {
       periods += 1;
     }
   }
   return periods;
 }
 
-function getLoanAmount() {
-  loanAmount = READLINE.question(MESSAGE.loanAmount);
-
-  if (isInvalidAmount(loanAmount)) {
+let retrieveInput = (inputType) => {
+  prompt(inputType);
+  let input = READLINE.question();
+  while (isInvalidAmount(input) || ((inputType === 'loanDuration') && (parseFloat(input) === 0))) {
     invalid();
-    getLoanAmount();
+    input = READLINE.question();
   }
-}
+  return input;
+};
 
-function getInterestRate() {
-  annualInterestRate = READLINE.question(MESSAGE.interestRate);
-
-  if (isInvalidAmount(annualInterestRate)) {
-    invalid();
-    getInterestRate();
-  }
-}
-
-function getLoanDuration() {
-  loanDurationYears = (READLINE.question(MESSAGE.loanDuration));
-
-  if (isInvalidAmount(loanDurationYears) ||
-    (parseFloat(loanDurationYears) === '0')) {
-    invalid();
-    getLoanDuration();
-  }
-}
 
 function getMonthlyPayment() {
-    monthlyInterestRate = (parseFloat(annualInterestRate) / 12) / 100;
-    loanDurationMonths = parseFloat(loanDurationYears) * 12;
-  
+  monthlyInterestRate = (parseFloat(annualInterestRate) / 12) / 100;
+  loanDurationMonths = parseFloat(loanDurationYears) * 12;
+
   if (!monthlyInterestRate) {
     monthlyPayment = parseFloat(loanAmount) / loanDurationMonths;
   } else {
@@ -77,34 +60,35 @@ function getMonthlyPayment() {
 }
 
 function printResult() {
-   console.log(`Your monthly payment is ${monthlyPayment}.`);
+  console.log(`=> Your monthly payment is ${monthlyPayment}.`);
 }
 
 function again() {
-  console.log(MESSAGE.another);
+  prompt('another');
 
   answer = READLINE.prompt().toUpperCase();
-
-  if ((answer !== 'Y') && (answer !== 'N')) {
-    invalid();
-    again();
-  }
 }
 
-console.log(MESSAGES.welcome);
+prompt('welcome');
 
 while (true) {
-  getLoanAmount();
 
-  getInterestRate();
+  loanAmount = retrieveInput('loanAmount');
 
-  getLoanDuration();
+  annualInterestRate = retrieveInput('interestRate');
+
+  loanDurationYears = retrieveInput('loanDuration');
 
   getMonthlyPayment();
 
   printResult();
 
   again();
+
+  while ((answer !== 'Y') && (answer !== 'N')) {
+    invalid();
+    again();
+  }
 
   if (answer === 'N') {
     break;

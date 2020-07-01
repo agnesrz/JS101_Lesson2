@@ -1,23 +1,61 @@
-  -[$]0, 5[%], 3[years], 0[months] => $0.00
-  -[$]1, 5[%], 3[years], 0[months] => $0.02 [ok]
-  -[$]15,726, 0[%], 30[years], 0[months] => $43,684.79
-  -[$]15,726,524 0[%], 30[years], 0[months] => $43.68
-  -[$]12,192, 1[%], 10[years], 0[months] => $106.81 
-  -[$]5,111, 3[%], 0[years], 0[months] => error
-  -[$]5,111, 3[%], 1[years], 0[months] => $432.87
-  -[$]405,123, 1.54[%], 25[years], 3[months] => $1,614.65
-  -[$]405,123, 1.54[%], 0[years], 24[months] => $17,152.24
-  -[$]2,500,000, .01, 0[years], 4[months] => $625,013.02
-  -[$]5.00, 5[%], 5[years], 0[months] => $0.09
-  -[$]$5, 5[%], 5[years], 0[months] => error
-  -[$]5, 5%[%], 5[years], 0[months] => $0.09
-  -[$]5, 5[%], 5 years[years], 0[months] => $0.09
-  -[$] , 5[%], 5[years], 0[months] => error
-  -[$]5, [%], 5[years], 0[months] => error
-  -[$]5, 5[%], [years], 0[months] => error
-  -[$]5, 5[%], [years],  [months] => error
-  -[$]5, 5[%], .5[years], [months] => error
-  -[$]5, 5[%], 0[years], 0.5[months] => error
-  
- 
- // is there a way to isnert a comma in result?
+const readline = require('readline-sync');
+
+function prompt(message) {
+  console.log(`=> ${message}`);
+}
+
+function isInvalidNumber(number) {
+  return number.trim() === '' ||
+         Number(number) < 0   ||
+         Number.isNaN(Number(number));
+}
+
+prompt('Welcome to Mortgage Calculator!');
+
+while (true) {
+  prompt('---------------------------------');
+
+  prompt('What is the loan amount?');
+
+  let amount = readline.question();
+  while (isInvalidNumber(amount)) {
+    prompt('Must enter a positive number');
+    amount = readline.question();
+  }
+
+  prompt("What is the interest rate?");
+  prompt("(Example: 5 for 5% or 2.5 for 2.5%)");
+  let interestRate = readline.question();
+
+  while (isInvalidNumber(interestRate)) {
+    prompt('Must enter a positive number');
+    interestRate = readline.question();
+  }
+
+  prompt("What is the loan duration (in years)?");
+  let years = readline.question();
+
+  while (isInvalidNumber(years)) {
+    prompt('Must enter a positive number');
+    years = readline.question();
+  }
+
+  let annualInterestRate = Number(interestRate) / 100;
+  let monthlyInterestRate = annualInterestRate / 12;
+  let months = Number(years) * 12;
+
+  let monthlyPayment = Number(amount) *
+                  (monthlyInterestRate /
+                  (1 - Math.pow((1 + monthlyInterestRate), (-Number(months)))));
+
+  prompt(`Your monthly payment is: $${monthlyPayment.toFixed(2)}`);
+
+  prompt("Another calculation?");
+  let answer = readline.question().toLowerCase();
+  while (answer[0] !== 'n' && answer[0] !== 'y') {
+    prompt('Please enter "y" or "n".');
+    answer = readline.question().toLowerCase();
+  }
+
+  if (answer[0] === 'n') break;
+}
