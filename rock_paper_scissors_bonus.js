@@ -78,7 +78,6 @@ while (true) {
 
     let winner = determineWinner(choice, computerChoice);
     displayWinner(choice, computerChoice, winner);
-
     if (winner === 'player') {
       playerWins += 1;
     } else if (winner === 'computer') {
